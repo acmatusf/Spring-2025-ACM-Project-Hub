@@ -14,23 +14,60 @@ BLACK = (0, 0, 0)
 GREEN = (0, 200, 0)
 RED   = (200, 0, 0)
 
+# Speed settings
+SPEED_LEVELS = {"Easy": 5, "Normal": 10, "Hard": 15}
+
+def show_menu(screen):
+    font = pygame.font.Font(None, 36)
+    screen.fill(BLACK)
+    
+    options = ["Easy", "Normal", "Hard"]
+    selected = 0
+    
+    while True:
+        screen.fill(BLACK)
+        title = font.render("Select Speed: Use v/^, ENTER to select", True, WHITE)
+        screen.blit(title, (20, 50))
+        
+        for i, option in enumerate(options):
+            color = GREEN if i == selected else WHITE
+            text = font.render(option, True, color)
+            screen.blit(text, (SCREEN_WIDTH // 3, 150 + i * 40))
+        
+        pygame.display.flip()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    selected = (selected - 1) % len(options)
+                elif event.key == pygame.K_DOWN:
+                    selected = (selected + 1) % len(options)
+                elif event.key == pygame.K_RETURN:
+                    return SPEED_LEVELS[options[selected]]
+
 def main():
     # 1. Initialize Pygame
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Snake Game")
 
-    # 2. Set up clock for controlling the frame rate
+    # 2. Show speed selection menu
+    speed = show_menu(screen)
+
+    # 3. Set up clock for controlling the frame rate
     clock = pygame.time.Clock()
 
-    # 3. Define a helper function to get a random position for the food
+    # 4. Define a helper function to get a random position for the food
     def get_random_food_position():
         # Randomly place food within the grid (0 <= x < CELL_COUNT, 0 <= y < CELL_COUNT)
         x = random.randint(0, CELL_COUNT - 1)
         y = random.randint(0, CELL_COUNT - 1)
         return (x, y)
 
-    # 4. Initialize the snake
+    # 5. Initialize the snake
     # Snake is a list of (x, y) positions; start in the middle with length 3
     snake = [(CELL_COUNT // 2, CELL_COUNT // 2),
              (CELL_COUNT // 2 - 1, CELL_COUNT // 2),
@@ -39,20 +76,13 @@ def main():
     # The snake's direction (dx, dy). Start moving right.
     dx, dy = 1, 0
 
-    # 5. Place initial food
+    # 6. Place initial food
     food = get_random_food_position()
 
-    # 6. Game loop
-
-    # define next directions, AVOID BUG OF SNAKE GOING INTO ITSELF
-    next_dx, next_dy = dx, dy
-    
-    #Set the mouse cursor to invisible
-    pygame.mouse.set_visible(False)
-
+    # 7. Game loop
     running = True
     while running:
-        clock.tick(10)  # Limit to 10 frames per second (adjust for difficulty)
+        clock.tick(speed)  # Adjust speed based on selection
 
         # --- EVENT HANDLING ---
         for event in pygame.event.get():
@@ -60,17 +90,14 @@ def main():
                 running = False
             elif event.type == pygame.KEYDOWN:
                 # Prevent snake from going directly backward
-                if (event.key == pygame.K_LEFT or event.key == pygame.K_a) and dx != 1:
-                    next_dx, next_dy = -1, 0
-                elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and dx != -1:
-                    next_dx, next_dy = 1, 0
-                elif (event.key == pygame.K_UP or event.key == pygame.K_w) and dy != 1:
-                    next_dx, next_dy = 0, -1
-                elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) and dy != -1:
-                    next_dx, next_dy = 0, 1
-        
-        # Apply directions change ONCE PER FRAME
-        dx, dy = next_dx, next_dy
+                if event.key == pygame.K_LEFT and dx != 1:
+                    dx, dy = -1, 0
+                elif event.key == pygame.K_RIGHT and dx != -1:
+                    dx, dy = 1, 0
+                elif event.key == pygame.K_UP and dy != 1:
+                    dx, dy = 0, -1
+                elif event.key == pygame.K_DOWN and dy != -1:
+                    dx, dy = 0, 1
 
         # --- UPDATE SNAKE ---
         # Current head position
@@ -81,14 +108,10 @@ def main():
         new_head = (new_x, new_y)
 
         # 1. Check for collisions with walls
-        if new_x < 0:
-            new_head = (CELL_COUNT - 1, new_y)
-        elif new_x >= CELL_COUNT:
-            new_head = (0, new_y)
-        elif new_y < 0:
-            new_head = (new_x, CELL_COUNT - 1)
-        elif new_y >= CELL_COUNT:
-            new_head = (new_x, 0)
+        if (new_x < 0 or new_x >= CELL_COUNT or
+            new_y < 0 or new_y >= CELL_COUNT):
+            # Hit a wall -> Game Over
+            running = False
 
         # 2. Check for collisions with self
         if new_head in snake:
@@ -101,10 +124,7 @@ def main():
         # 3. Check if we ate the food
         if new_head == food:
             # Generate a new food position; don't pop the tail (snake grows)
-            temp_food = get_random_food_position()
-            while temp_food in snake or temp_food is new_head:
-                temp_food = get_random_food_position()
-            food = temp_food
+            food = get_random_food_position()
         else:
             # Move forward (remove the tail)
             snake.pop()
