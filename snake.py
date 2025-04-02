@@ -2,6 +2,8 @@ import pygame
 import sys
 import random
 
+import pygame.freetype
+
 # Initialize constants
 CELL_SIZE = 20   # Size of each grid cell in pixels
 CELL_COUNT = 20  # Number of cells horizontally and vertically (so 400x400 window)
