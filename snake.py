@@ -123,9 +123,9 @@ def main():
     # define next directions, AVOID BUG OF SNAKE GOING INTO ITSELF
     next_dx, next_dy = dx, dy
     
-    #Set the mouse cursor to invisible
-    #pygame.mouse.set_visible(False)
-
+    death_blocks = []
+    apples_eaten = 0
+    
     running = True
     while running:
         clock.tick(speed)  # Adjust speed based on difficulty
@@ -162,11 +162,6 @@ def main():
         if paused:
             continue
         
-        # Apply directions change ONCE PER FRAME
-        dx, dy = next_dx, next_dy
-
-        # --- UPDATE SNAKE ---
-        # Current head position
         head_x, head_y = snake[0]
         # New head position
         new_x = head_x + dx
@@ -202,19 +197,20 @@ def main():
         if move:
             play_sound(movement_sound)
             move = False
-
-        # 3. Check if we ate the food
+        
         if new_head == (food[0], food[1]):
             play_sound(eat_sound) # play snake eat food sound
             snake_color = food[2] # changes snake color based on food
             speed += speed_change # increase snake speed after eating food
-            # Generate a new food position; don't pop the tail (snake grows)
-            temp_food = get_random_food_position()
-            while temp_food in snake or temp_food is new_head:
-                temp_food = get_random_food_position()
-            food = temp_food
+            apples_eaten += 1
+            food = get_random_position(snake + death_blocks)
+            if apples_eaten % 5 == 0:
+                if len(death_blocks) < 5:
+                    death_blocks.append(get_random_position(snake + death_blocks + [food]))
+                else:
+                    death_blocks.pop(0)
+                    death_blocks.append(get_random_position(snake + death_blocks + [food]))
         else:
-            # Move forward (remove the tail)
             snake.pop()
 
         # --- DRAW EVERYTHING ---
@@ -236,8 +232,7 @@ def main():
         screen.blit(font.render("Pause", True, BLACK), (140, 20))
         
         pygame.display.flip()
-
-    # Once we exit the loop, the game is over
+    
     pygame.quit()
     sys.exit()
 
