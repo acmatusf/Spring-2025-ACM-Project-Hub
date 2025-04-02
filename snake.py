@@ -14,6 +14,12 @@ BLACK = (0, 0, 0)
 GREEN = (0, 200, 0)
 RED   = (200, 0, 0)
 
+
+# Function to play the sound
+def play_sound(sound):
+    pygame.mixer.Sound.play(sound)
+
+    
 def main():
     # 1. Initialize Pygame
     pygame.init()
@@ -42,6 +48,11 @@ def main():
     # 5. Place initial food
     food = get_random_food_position()
 
+    # Initialize sounds
+    movement_sound = pygame.mixer.Sound("movement.wav")
+    eat_sound = pygame.mixer.Sound("eating.wav")
+    death_sound = pygame.mixer.Sound("death-sound-pixel.wav")
+
     # 6. Game loop
 
     # define next directions, AVOID BUG OF SNAKE GOING INTO ITSELF
@@ -59,6 +70,8 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
+                play_sound(movement_sound)
+
                 # Prevent snake from going directly backward
                 if (event.key == pygame.K_LEFT or event.key == pygame.K_a) and dx != 1:
                     next_dx, next_dy = -1, 0
@@ -93,13 +106,20 @@ def main():
         # 2. Check for collisions with self
         if new_head in snake:
             # Hit itself -> Game Over
+            
+            play_sound(death_sound)
+            pygame.time.delay(1000)  # Wait for a second to let the sound play
+
             running = False
+            
 
         # If still safe, insert new head
         snake.insert(0, new_head)
 
         # 3. Check if we ate the food
         if new_head == food:
+            play_sound(eat_sound)
+
             # Generate a new food position; don't pop the tail (snake grows)
             temp_food = get_random_food_position()
             while temp_food in snake or temp_food is new_head:
