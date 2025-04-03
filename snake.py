@@ -78,15 +78,14 @@ def main():
                     dx, dy = 0, 1
                 elif event.key == pygame.K_p:  # Pause toggle
                     paused = not paused
+                elif event.key == pygame.K_b:  # Change background
+                    current_background = (current_background + 1) % len(backgrounds)
                 elif event.key == pygame.K_PLUS or event.key == pygame.K_EQUALS:  # Increase volume
                     volume = min(1.0, volume + 0.1)
                     pygame.mixer.music.set_volume(volume)
                 elif event.key == pygame.K_MINUS:  # Decrease volume
                     volume = max(0.0, volume - 0.1)
                     pygame.mixer.music.set_volume(volume)
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if 10 <= event.pos[0] <= 110 and 10 <= event.pos[1] <= 50:
-                    current_background = (current_background + 1) % len(backgrounds)
         
         if paused:
             continue
@@ -114,14 +113,6 @@ def main():
         for x, y in snake:
             pygame.draw.rect(screen, snake_color, (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
         pygame.draw.rect(screen, food[2], (food[0] * CELL_SIZE, food[1] * CELL_SIZE, CELL_SIZE, CELL_SIZE))
-        
-        # Draw buttons
-        pygame.draw.rect(screen, WHITE, (10, 10, 100, 40))
-        font = pygame.font.Font(None, 24)
-        screen.blit(font.render("Change BG", True, BLACK), (20, 20))
-        
-        pygame.draw.rect(screen, WHITE, (120, 10, 80, 40))
-        screen.blit(font.render("Pause", True, BLACK), (140, 20))
         
         pygame.display.flip()
     
