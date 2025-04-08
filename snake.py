@@ -21,6 +21,17 @@ SCREEN_GAME_ARENA = CELL_SIZE * CELL_COUNT # Game area size
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 200, 0) # Default snake color
+DIFFICULTY_COLORS = {
+    "Easy": (0, 255, 0), # Bright Green
+    "Normal": (255, 165, 0), # Orange
+    "Hard": (139, 0, 0) # Blood red
+}
+
+
+
+# BRIGHT_GREEN = (0, 255, 0)
+# ORANGE = (255, 165, 0)
+# BLOOD_RED = (139, 0, 0)
 
 
 # IDEA FOR BG: have 0.000000000001 chance of getting randoim funny b g when changing it 
@@ -70,7 +81,7 @@ def show_menu(screen):
         screen.blit(title, title_rect)
         
         for i, option in enumerate(options):
-            color = GREEN if i == selected else WHITE
+            color = DIFFICULTY_COLORS[option] if i == selected else WHITE
             text = option_font.render(option, True, color)
             text_rect = text.get_rect(topleft=(text_x, text_y + i * 60))
 
@@ -159,9 +170,18 @@ def pause_menu(screen):
 # Function to play the snake sounds
 def play_sound(sound):
     pygame.mixer.Sound.play(sound)
-                
 
+# Function to get random color
+def get_random_color():
+    return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
+# Function to get a random position for the food
+def get_random_food_position():
+    # Randomly place food within the grid (0 <= x < CELL_COUNT, SCOREBOARD_CELLS - 1 <= y < CELL_COUNT + SCOREBOARD_CELLS - 1)
+    x = random.randint(0, CELL_COUNT - 1)
+    y = random.randint(SCOREBOARD_CELLS + 1, CELL_COUNT + SCOREBOARD_CELLS - 1)
+    color = get_random_color()
+    return (x, y, color)
 
 # Initialize Pygame & setup display
 pygame.init()
@@ -181,16 +201,6 @@ pygame.mixer.music.play(-1)  # Loop the music indefinitely
 volume = 0.5
 pygame.mixer.music.set_volume(volume)
 
-def get_random_color():
-    return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-
-# Define a helper function to get a random position for the food
-def get_random_food_position():
-    # Randomly place food within the grid (0 <= x < CELL_COUNT, SCOREBOARD_CELLS - 1 <= y < CELL_COUNT + SCOREBOARD_CELLS - 1)
-    x = random.randint(0, CELL_COUNT - 1)
-    y = random.randint(SCOREBOARD_CELLS - 1, CELL_COUNT + SCOREBOARD_CELLS - 1)
-    color = get_random_color()
-    return (x, y, color)
 
 def main():
     global current_background, paused, volume, speed
@@ -218,8 +228,8 @@ def main():
     next_dx, next_dy = dx, dy
 
     score = 0
-    score_x = SCREEN_WIDTH // 14 # X position of the score
-    score_y = SCOREBOARD_HEIGHT // 2  # Y position of the score
+    score_x = SCREEN_WIDTH // 17 # X position of the score
+    score_y = SCOREBOARD_HEIGHT // 2 - 10  # Y position of the score
 
 
 
@@ -316,7 +326,7 @@ def main():
         pygame.draw.rect(screen, BLACK, (0, 0, SCREEN_WIDTH, SCOREBOARD_HEIGHT))
 
         # Draw the score
-        score_font = pygame.font.Font(font_sellected, 25)
+        score_font = pygame.font.Font(font_sellected, 27)
         score_text = score_font.render(f"Score: {score}", True, WHITE)
         score_rect = score_text.get_rect(topleft=(score_x, score_y))
 
