@@ -4,7 +4,7 @@ import random
 
 # Initialize constants
 CELL_SIZE = 30   # Size of each grid cell in pixels
-CELL_COUNT = 20  # Number of cells horizontally and vertically (so 400x400 window)
+CELL_COUNT = 20  # Number of cells horizontally and vertically (so 600x600 window)
 SCREEN_WIDTH = CELL_SIZE * CELL_COUNT
 SCREEN_HEIGHT = CELL_SIZE * CELL_COUNT
 
@@ -31,6 +31,36 @@ def play_sound(sound):
 SPEED_LEVELS = {"Easy": 5.0, "Normal": 10.0, "Hard": 15.0}
 SPEED_CHANGES = {"Easy": 0.25, "Normal": 0.5, "Hard": 0.75}
 speed_change = 0
+
+def show_main_menu(screen):
+    font = pygame.font.Font(None, 48)
+    option_font = pygame.font.Font(None, 36)
+    options = ["Classic Mode", "Challenge Mode"]
+    selected = 0
+
+    while True:
+        screen.fill(BLACK)
+        title = font.render("snAkeCM", True, GREEN)
+        screen.blit(title, (SCREEN_WIDTH // 2 - title.get_width() // 2, 50))
+
+        for i, option in enumerate(options):
+            color = GREEN if i == selected else WHITE
+            text = option_font.render(option, True, color)
+            screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, 150 + i * 50))
+
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    selected = (selected - 1) % len(options)
+                elif event.key == pygame.K_DOWN:
+                    selected = (selected + 1) % len(options)
+                elif event.key == pygame.K_RETURN:
+                    return options[selected]  # For future use if you want different behavior
 
 def show_menu(screen):
     global speed_change
@@ -73,7 +103,10 @@ pygame.display.set_caption("Snake Game")
 # 2. Set up clock for controlling the frame rate
 clock = pygame.time.Clock()
 
-# 3. Show speed selection menu
+# 3. Show main menu first
+selected_mode = show_main_menu(screen)
+
+# 4. Show speed selection menu
 speed = show_menu(screen)
 
 # Initialize sound
@@ -122,9 +155,6 @@ def main():
 
     # define next directions, AVOID BUG OF SNAKE GOING INTO ITSELF
     next_dx, next_dy = dx, dy
-    
-    #Set the mouse cursor to invisible
-    #pygame.mouse.set_visible(False)
 
     running = True
     while running:
@@ -147,6 +177,8 @@ def main():
                     next_dx, next_dy = 0, 1
                 elif event.key == pygame.K_p:  # Pause toggle
                     paused = not paused
+                elif event.key == pygame.K_b:  # Change background
+                    current_background = (current_background + 1) % len(backgrounds)
                 elif event.key == pygame.K_PLUS or event.key == pygame.K_EQUALS:  # Increase volume
                     volume = min(1.0, volume + 0.1)
                     pygame.mixer.music.set_volume(volume)
@@ -155,9 +187,6 @@ def main():
                     pygame.mixer.music.set_volume(volume)
                 else:
                     move = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if 10 <= event.pos[0] <= 110 and 10 <= event.pos[1] <= 50:
-                    current_background = (current_background + 1) % len(backgrounds)
         
         if paused:
             continue
@@ -226,14 +255,6 @@ def main():
 
         # Draw the food
         pygame.draw.rect(screen, food[2], (food[0] * CELL_SIZE, food[1] * CELL_SIZE, CELL_SIZE, CELL_SIZE))
-
-        # Draw buttons
-        pygame.draw.rect(screen, WHITE, (10, 10, 100, 40))
-        font = pygame.font.Font(None, 24)
-        screen.blit(font.render("Change BG", True, BLACK), (20, 20))
-        
-        pygame.draw.rect(screen, WHITE, (120, 10, 80, 40))
-        screen.blit(font.render("Pause", True, BLACK), (140, 20))
         
         pygame.display.flip()
 
