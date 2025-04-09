@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import json
 
 # Initialize constants
 CELL_SIZE = 20   # Size of each grid cell in pixels
@@ -14,12 +15,38 @@ BLACK = (0, 0, 0)
 GREEN = (0, 200, 0)
 RED   = (200, 0, 0)
 
+def get_player_name(screen, font):
+    name = ""
+    input_active = True
+    
+    while input_active:
+        screen.fill(BLACK)
+        prompt_text = font.render("Enter your name: " + name, True, WHITE)
+        screen.blit(prompt_text, (50, SCREEN_HEIGHT // 2))
+        pygame.display.flip()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN and name:
+                    input_active = False
+                elif event.key == pygame.K_BACKSPACE:
+                    name = name[:-1]
+                elif event.unicode.isprintable():
+                    name += event.unicode
+    
+    return name
+
 def main():
     # 1. Initialize Pygame
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Snake Game")
     font = pygame.font.Font(None, 30)  # Font for displaying score
+
+    player_name = get_player_name(screen, font)
 
     # 2. Set up clock for controlling the frame rate
     clock = pygame.time.Clock()
@@ -76,7 +103,26 @@ def main():
             new_head = (new_x, 0)
 
         if new_head in snake:
-            running = False
+
+            new_entry = {'user': player_name, 'score': score}
+
+            # Load existing data or start with an empty list
+            try:
+                with open('user_score.json', 'r') as file:
+                    scores = json.load(file)
+            except (FileNotFoundError, json.JSONDecodeError):
+                scores = []
+
+            # Append the new score
+            scores.append(new_entry)
+
+            # Save the updated list
+            with open('user_score.json', 'w') as file:
+                json.dump(scores, file, indent=4)
+
+            print(new_entry)
+            break  # Stop the game loop and restart
+            
 
         snake.insert(0, new_head)
 
@@ -103,8 +149,7 @@ def main():
 
         pygame.display.flip()
 
-    pygame.quit()
-    sys.exit()
+    main()
 
 if __name__ == "__main__":
     main()
