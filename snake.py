@@ -308,7 +308,7 @@ def main():
             next_dx = dx
             next_dy = dy
 
-           
+            flipped_once = True
 
         elif score < 15:
             pass # Call 2nd challenge function
