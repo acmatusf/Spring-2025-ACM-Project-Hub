@@ -253,6 +253,7 @@ volume = 0.5
 pygame.mixer.music.set_volume(volume)
 
 def main():
+    flipped_once = False
     global current_background, volume, speed
     # Initialize the snake
     # Snake is a list of (x, y) positions; start in the middle with length 3
@@ -293,8 +294,22 @@ def main():
         clock.tick(speed)  # Adjust speed based on difficulty
 
         # --- CHALLENGE MODE TOGGLE ---
-        if 5 < score < 10:
-            pass # Call 1st challenge function
+        if 5 <= score < 10 and not flipped_once:
+
+            snake.reverse()
+
+                         
+            x1, y1 = snake[0]
+            x2, y2 = snake[1]
+
+            dx = x1 - x2
+            dy = y1 - y2
+
+            next_dx = dx
+            next_dy = dy
+
+            flipped_once = True
+
         elif score < 15:
             pass # Call 2nd challenge function
         elif score < 20:
@@ -332,6 +347,20 @@ def main():
                 elif event.key == pygame.K_MINUS:  # Decrease volume
                     volume = max(0.0, volume - 0.1)
                     pygame.mixer.music.set_volume(volume)
+
+                # elif event.key == pygame.K_f:
+                #         snake.reverse()
+
+                         
+                #         x1, y1 = snake[0]
+                #         x2, y2 = snake[1]
+
+                #         dx = x1 - x2
+                #         dy = y1 - y2
+
+                #         next_dx = dx
+                #         next_dy = dy
+
         
         # Apply directions change ONCE PER FRAME
         dx, dy = next_dx, next_dy
@@ -389,12 +418,13 @@ def main():
             play_sound(eat_sound) # play snake eat food sound
             snake_color = food[2] # changes snake color based on food
             speed += speed_change # increase snake speed after eating food
-            score += 10  # Increase score by 10 when food is eaten
+            score += 1  # Increase score by 1 when food is eaten
             # Generate a new food position; don't pop the tail (snake grows)
             temp_food = get_random_food_position()
             while temp_food in snake or temp_food is new_head:
                 temp_food = get_random_food_position()
             food = temp_food
+            flipped_once = False
         else:
             # Move forward (remove the tail)
             snake.pop()
