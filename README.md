@@ -24,6 +24,7 @@ https://github.com/tubermucas <br />
 - Font: The chosen font for all text in the game is Press Start 2P.
 
 **Sean** <br />
+https://github.com/notcovey <br />
 - Main Menu: Menu to select modes before starting the game and title screen
 - Difficulty modes in classic mode: Changes speed settings to match assigned difficulty within classic mode
 - Death blocks (not included into final due to breaking game): Blocks that would kill the player upon contact, spawned until 5 were on the map at which point the oldest one in the group would change position.
