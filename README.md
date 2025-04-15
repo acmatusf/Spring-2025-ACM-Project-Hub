@@ -23,6 +23,11 @@ https://github.com/tubermucas <br />
 - ScoreBoard: The screen is divided into two parts: a black rectangle on top with the current user's score and the play area itself.
 - Font: The chosen font for all text in the game is Press Start 2P.
 
+**Sean** <br />
+- Main Menu: Menu to select modes before starting the game and title screen
+- Difficulty modes in classic mode: Changes speed settings to match assigned difficulty within classic mode
+- Death blocks (not included into final due to breaking game): Blocks that would kill the player upon contact, spawned until 5 were on the map at which point the oldest one in the group would change position.
+
 **Minh** <br />
 https://github.com/CodingMinh <br />
 Speed up and teleporting apple for challenge mode
@@ -33,4 +38,4 @@ Speed up and teleporting apple for challenge mode
 https://github.com/Agentscreator <br />
 "Background Themes", "Background Music"
 - Background Themes: Selected and implemented five unique background designs that players can change using ESC: ☘️ Forest ⛅️ Desert 🌊 Ocean ⛰️ Mountain 🌌 Space
-- Background Music: Added background music to give the game a music for the game https://youtu.be/PzxywNLeDrg?list=RDPzxywNLeDrg 
+- Background Music: Added background music to give the game a music for the game https://youtu.be/PzxywNLeDrg?list=RDPzxywNLeDrg
