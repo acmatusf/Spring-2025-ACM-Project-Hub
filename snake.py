@@ -1,8 +1,15 @@
 import pygame
-import sys
 import random
 import json
 import time
+
+import os
+import sys
+
+def resource_path(relative_path):
+    # Get absolute path to resource, works for dev and for PyInstaller
+    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
+    return os.path.join(base_path, relative_path)
 
 # Initialize constants
 CELL_SIZE = 30  # Size of each grid cell in pixels
@@ -64,16 +71,16 @@ clock = pygame.time.Clock()
 
 # Load background images
 backgrounds = [
-    pygame.image.load("images/forest.png"),
-    pygame.image.load("images/desert2.jpg"),
-    pygame.image.load("images/ocean.jpg"),
-    pygame.image.load("images/mountain.jpg"),
-    pygame.image.load("images/space.jpg")
+    pygame.image.load(resource_path("assets/images/forest.png")),
+    pygame.image.load(resource_path("assets/images/desert2.jpg")),
+    pygame.image.load(resource_path("assets/images/ocean.jpg")),
+    pygame.image.load(resource_path("assets/images/mountain.jpg")),
+    pygame.image.load(resource_path("assets/images/space.jpg"))
 ]
 current_background = 0  # Index for current background
 
 # Font settings
-font_sellected = "PressStart2P-Regular.ttf" # Font for the game
+font_sellected = resource_path("assets/PressStart2P-Regular.ttf") # Font for the game
 
 # Speed settings
 SPEED_LEVELS = {"Easy": 5.0, "Normal": 10.0, "Hard": 15.0}
@@ -85,20 +92,14 @@ hard_mode_unlocked = False
 best_score = 0
 
 '''
-IDEAS / WHAT TO DO 
+IDEAS / WHAT TO DO
 
-(In addition to main tasks like toggle function or main menu )
-
-Change bacground images: more 8-bit images that would fit the vibe 
+Change background images: more 8-bit images that would fit the vibe 
 8-bit music (Change music to hard rockish when closer to finish the game)
 
-in pause manu change Quit to Back to MM 
-also add sound effect on/off button
-
-eastern egg in backgrounds with chance of 0.0000001% 
+easter egg in backgrounds with chance of 0.0000001% 
 
 '''
-
 
 # --- UI ---
 
@@ -119,7 +120,6 @@ def main_menu(screen):
 
     options = ["Classic Mode", "Challenge Mode", "Quit"]
 
-    
     selectable_indexes = [
         i for i, option in enumerate(options) if option != 'Challenge Mode' or hard_mode_unlocked
     ]
@@ -146,7 +146,6 @@ def main_menu(screen):
             screen.blit(text, text_rect)
         
         pygame.display.flip()
-        
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -227,7 +226,6 @@ def pause_menu(screen, mode, difficulty):
 
     text_x = x_paused + PAUSED_MENU_WIDTH // 8 # X position of the text
     text_y = y_paused + PAUSED_MENU_HEIGHT // 8 + 50 # Y position of the text
-
 
     options = ["Resume", "Restart", "Change BG", "Music On/Off", "Back to MM"]
     selected = 0
@@ -338,7 +336,6 @@ def death_menu(score, player_name):
         again_rect = again.get_rect(topleft=(text_x, text_y))
         screen.blit(again, again_rect)
 
-        
         for i, option in enumerate(options):
             color = WHITE if i == selected else YELLOW
 
@@ -365,11 +362,11 @@ def death_menu(score, player_name):
 
 def play_cutscene(screen):
     # Load image and scale to screen size
-    image = pygame.image.load("images/end.jpg")
+    image = pygame.image.load(resource_path("assets/images/end.jpg"))
     image = pygame.transform.scale(image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     # Load and play music
-    pygame.mixer.music.load("Sound/bye.mp3")
+    pygame.mixer.music.load(resource_path("assets/Sound/bye.mp3"))
     pygame.mixer.music.play()
 
     # Draw image
@@ -389,8 +386,6 @@ def play_cutscene(screen):
     # After music is done, resume game
     main()
 
-
-
 # --- HELPER FUNCTIONS ---
 
 # Function to play the snake sounds
@@ -406,7 +401,6 @@ def get_random_square_position():
     # Randomly place food within the grid (0 <= x < CELL_COUNT, SCOREBOARD_CELLS - 1 <= y < CELL_COUNT + SCOREBOARD_CELLS - 1)
     x = random.randint(0, CELL_COUNT - 1)
     y = random.randint(SCOREBOARD_CELLS + 1, CELL_COUNT + SCOREBOARD_CELLS - 1)
-
     return (x, y)
 
 # Register player's name and score (Only in hard difficulty of classic mode)
@@ -484,7 +478,6 @@ def final_destiny(snake):
 
     return (apple_x, apple_y), stones, (blank_stone[0], blank_stone[1])
 
-
 # --- GAME ---
 
 def game(mode, difficulty):
@@ -503,12 +496,11 @@ def game(mode, difficulty):
 
     # Initialize sound
     pygame.mixer.init()
-    pygame.mixer.music.load("Sound/Sound.mp3")  # Load background music
+    pygame.mixer.music.load(resource_path("assets/Sound/Sound.mp3"))  # Load background music
     pygame.mixer.music.play(-1)  # Loop the music indefinitely
     volume = 0.5
     pygame.mixer.music.set_volume(volume)
 
-    
     # Initialize the snake
     # Snake is a list of (x, y) positions; start in the middle with length 3
     snake = [(CELL_COUNT // 2, CELL_COUNT // 2),
@@ -521,11 +513,10 @@ def game(mode, difficulty):
         font2 = pygame.font.Font(font_sellected, 20)
         player_name = get_player_name(screen, font2)
 
-    
     # Initialize snake sounds
-    movement_sound = pygame.mixer.Sound("Sound/movement.wav")
-    eat_sound = pygame.mixer.Sound("Sound/eating.wav")
-    death_sound = pygame.mixer.Sound("Sound/death-sound-pixel.wav")
+    movement_sound = pygame.mixer.Sound(resource_path("assets/Sound/movement.wav"))
+    eat_sound = pygame.mixer.Sound(resource_path("assets/Sound/eating.wav"))
+    death_sound = pygame.mixer.Sound(resource_path("assets/Sound/death-sound-pixel.wav"))
     
     # The snake's direction (dx, dy). Start moving right.
     dx, dy = 1, 0
@@ -581,7 +572,6 @@ def game(mode, difficulty):
                         temp_stone = get_random_square_position()
                     stone = temp_stone
                     stones.append(stone)
-                    
 
                     last_time = current_time
             
@@ -589,30 +579,28 @@ def game(mode, difficulty):
                 # Speed up
                 obstacles_once = True # remove stones
 
-                speed *= 1.25
+                speed *= 1.2
                 speed_up_once = True 
-                if score == 14: # resets the speed
-                    speed /= pow(1.25, 4)
+                if score == 18: # resets the speed
+                    speed /= pow(1.2, 2)
                 
             elif 19 <= score < 24:
-                # Teleporting apple: update food position every 10 seconds
+                # Teleporting apple: update food position every 5 seconds
                 current_time = pygame.time.get_ticks()
-                if current_time - last_time >= 5000:  # 0,000 milliseconds = 10 seconds
+                if current_time - last_time >= 5000:  # 5000 milliseconds = 5 seconds
                     # Generate a new food position
                     temp_food = get_random_square_position()
                     while temp_food in snake or temp_food is new_head or temp_food in stones:
-
                         temp_food = get_random_square_position()
                     food = temp_food
                     last_time = current_time
+
             elif 24 <= score < 28:
                 apple_surrounded = True
+
             elif score == 28:
                 apple_surrounded = False
                 final = True
-
-        
-        
 
         # --- EVENT HANDLING ---
         for event in pygame.event.get():
@@ -680,8 +668,6 @@ def game(mode, difficulty):
         # If still safe, insert new head
         snake.insert(0, new_head)
 
-        
-
         # Check if we ate the food
         if new_head == food:
             play_sound(eat_sound) # play snake eat food sound
@@ -694,9 +680,8 @@ def game(mode, difficulty):
 
             # Unlock the Challange mode if certain score is reached
             if mode == "Classic Mode" and not hard_mode_unlocked:
-                if (score >= 20 and difficulty == 'Hard') or (score >= 25 and difficulty == 'Normal'):
+                if (score >= 15 and difficulty == 'Hard') or (score >= 25 and difficulty == 'Normal'):
                     hard_mode_unlocked = True
-
 
             if apple_surrounded:
                 food, stones = surrounded_apple(snake)
@@ -728,9 +713,6 @@ def game(mode, difficulty):
 
         # Draw the score
         score_font = pygame.font.Font(font_sellected, 27)
-
-
-         
         score_display = f"Score: {score}"
         if mode == 'Challenge Mode':
             score_display += '/30'
@@ -762,7 +744,6 @@ def game(mode, difficulty):
     # Once we exit the loop, the game is over
     pygame.quit()
     sys.exit()
-
 
 def main():
     global screen, best_score
