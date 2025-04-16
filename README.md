@@ -7,7 +7,7 @@ This project is designed to help students learn by doing. Instead of traditional
 
 Our end goal is to showcase the project in a final event where you can present your work. This isn’t just about making a game; it’s about building a project that demonstrates your skills and looks great on your resume, boosting your internship chances and paving the way for future Project Hubs.
 
-If you would like to play the game, simply download the "Spring-2025-ACM-Project-Hub.rar" file, extract it, select "dist" folder, and open "snake.exe". *Hint*: There's a secret reward for beating challenge mode
+If you would like to play the game, simply download the "snAkeCM.zip" file, extract it, select "dist" folder, and open "snake.exe". *Hint*: To unlock challenge mode, you need to score 15 points in Hard mode and 20 points in Normal mode. And there's a secret reward for beating challenge mode
 
 ## Documentation
 

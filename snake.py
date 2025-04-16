@@ -32,6 +32,7 @@ BLACK = (0, 0, 0)
 GREEN = (0, 200, 0) # Default snake color
 YELLOW = (255, 255, 0)
 GRAY = (100, 100, 100)
+LIGHT_GRAY = (105, 105, 105)
 RED = (255, 0, 0)
 GOLD = (255, 215, 0)
 
@@ -484,7 +485,6 @@ def game(mode, difficulty):
     # boolean variables for challenge mode toggle
     flipped_once = False
     speed_up_once = False
-    obstacles_once = False
     apple_surrounded = False
     final = False
 
@@ -562,7 +562,7 @@ def game(mode, difficulty):
 
                 flipped_once = True
             
-            elif 10 <= score < 17 and not obstacles_once:
+            elif 10 <= score < 17:
                 # Random obstacles aka stones
                 current_time = pygame.time.get_ticks()
                 if current_time - last_time >= 5000:
@@ -577,12 +577,12 @@ def game(mode, difficulty):
             
             elif 17 <= score < 19 and not speed_up_once:
                 # Speed up
-                obstacles_once = True # remove stones
+                stones.clear()
 
                 speed *= 1.2
                 speed_up_once = True 
                 if score == 18: # resets the speed
-                    speed /= pow(1.2, 2)
+                    speed /= pow(2, 2)
                 
             elif 19 <= score < 24:
                 # Teleporting apple: update food position every 5 seconds
@@ -680,7 +680,7 @@ def game(mode, difficulty):
 
             # Unlock the Challange mode if certain score is reached
             if mode == "Classic Mode" and not hard_mode_unlocked:
-                if (score >= 15 and difficulty == 'Hard') or (score >= 25 and difficulty == 'Normal'):
+                if (score >= 15 and difficulty == 'Hard') or (score >= 20 and difficulty == 'Normal'):
                     hard_mode_unlocked = True
 
             if apple_surrounded:
@@ -729,15 +729,12 @@ def game(mode, difficulty):
         # Draw the food
         pygame.draw.rect(screen, apple_color, (food[0] * CELL_SIZE, food[1] * CELL_SIZE, CELL_SIZE, CELL_SIZE))
 
-        if obstacles_once:
-            stones.clear()
-
         if len(stones) != 0:
             for x, y in stones:
                 pygame.draw.rect(screen, GRAY, (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
         
         if blank:
-            pygame.draw.rect(screen, BLACK, (blank[0] * CELL_SIZE, blank[1] * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+            pygame.draw.rect(screen, LIGHT_GRAY, (blank[0] * CELL_SIZE, blank[1] * CELL_SIZE, CELL_SIZE, CELL_SIZE))
         
         pygame.display.flip()
 
